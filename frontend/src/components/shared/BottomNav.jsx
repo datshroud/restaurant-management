@@ -26,7 +26,7 @@ const BottomNav = () => {
         </div>
         <div className="absolute -top-6 left-1/2 -translate-x-1/2 bg-[#F6B100]
                         text-[#f5f5f5] rounded-full p-4 items-center 
-                        justify-center shadow-lg">
+                        justify-center shadow-lg cursor-pointer">
             <BiSolidDish size={30}/>
         </div>
     </div>

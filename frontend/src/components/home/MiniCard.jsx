@@ -2,7 +2,7 @@ import React from 'react'
 
 const MiniCard = ({title, icon, value, increaseRate, color}) => {
   return (
-    <div className='bg-[#1f1f1f] py-5 px-5 rounded-lg w-[50%]'>
+    <div className='bg-[#1a1a1a] py-5 px-5 rounded-lg flex-1'>
         <div className='flex items-start justify-between'>
             <h1 className='text-2xl text-[#f5f5f5] tracking-wide'>{title}</h1>
             <button className={`${color} p-3 text-[#f5f5f5] font-bold 
@@ -11,7 +11,7 @@ const MiniCard = ({title, icon, value, increaseRate, color}) => {
             </button>
         </div>
         <div>
-            <h1 className='text-[#f5f5f5] text-4xl'>
+            <h1 className='text-[#f5f5f5] text-3xl font-bold mt-2'>
                 {
                     title === "Tổng thu nhập" ? 
                         value.toLocaleString("vi-VN", {
@@ -20,12 +20,12 @@ const MiniCard = ({title, icon, value, increaseRate, color}) => {
                         }) : value
                 }
             </h1>
-            <div className='flex items-start justify-center mt-2'>
+            <div className='flex items-end justify-start  mt-2'>
                 <h1 className={`${increaseRate > 0 ? "text-[#02ca3a]" : 
-                                "text-[#be3e3f]"} text-2xl`}>
+                                "text-[#be3e3f]"} text-xl mr-2`}>
                     {Math.abs(increaseRate)}%
                 </h1>
-                <h1 className=" text-[#f5f5f5] text-2xl ">
+                <h1 className=" text-[#f5f5f5] text-xl ">
                     So với hôm qua
                 </h1>
             </div>
