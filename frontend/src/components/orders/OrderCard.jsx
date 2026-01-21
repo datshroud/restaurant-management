@@ -4,7 +4,8 @@ import { FaCircle } from "react-icons/fa";
 
 const OrderCard = () => {
   return (
-    <div className='flex flex-col gap-4 bg-[#363636] px-4 py-4 rounded-lg'>
+    <div className='flex flex-col gap-4 bg-[#2b2a2a] px-4 py-4 rounded-2xl
+                    shadow-lg cursor-pointer'>
         <div className='flex justify-between items-center'>
             <div className='flex gap-3'>
                 <div className='flex h-[50px] w-[50px] items-center 

@@ -71,3 +71,21 @@ export const popularDishes = [
     numberOfOrders: 160,
   },
 ];
+
+export const tables = [
+    { id: 1, name: "Bàn 1", status: "Đã đặt", initial: "AM", seats: 4 },
+    { id: 2, name: "Bàn 2", status: "Có sẵn", initial: "MB", seats: 6 },
+    { id: 3, name: "Bàn 3", status: "Đã đặt", initial: "JS", seats: 2 },
+    { id: 4, name: "Bàn 4", status: "Có sẵn", initial: "HR", seats: 4 },
+    { id: 5, name: "Bàn 5", status: "Đã đặt", initial: "PL", seats: 3 },
+    { id: 6, name: "Bàn 6", status: "Có sẵn", initial: "RT", seats: 4 },
+    { id: 7, name: "Bàn 7", status: "Đã đặt", initial: "LC", seats: 5 },
+    { id: 8, name: "Bàn 8", status: "Có sẵn", initial: "DP", seats: 5 },
+    { id: 9, name: "Bàn 9", status: "Đã đặt", initial: "NK", seats: 6 },
+    { id: 10, name: "Bàn 10", status: "Có sẵn", initial: "SB", seats: 6 },
+    { id: 11, name: "Bàn 11", status: "Đã đặt", initial: "GT", seats: 4 },
+    { id: 12, name: "Bàn 12", status: "Có sẵn", initial: "JS", seats: 6 },
+    { id: 13, name: "Bàn 13", status: "Đã đặt", initial: "EK", seats: 2 },
+    { id: 14, name: "Bàn 14", status: "Có sẵn", initial: "QN", seats: 6 },
+    { id: 15, name: "Bàn 15", status: "Đã đặt", initial: "TW", seats: 3 }
+  ];
