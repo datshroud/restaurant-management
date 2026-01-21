@@ -25,7 +25,8 @@ const Greetings = () => {
     };  
 
     return (
-        <div className='flex justify-between items-center mt-5 px-8'>
+        <div className='flex justify-between items-center mt-5 px-8
+        '>
             <div className=''>
                 <h1 className='text-[#f5f5f5] font-semibold text-2xl 
                                 tracking-wide'>Xin chào, Đạt Lê</h1>
