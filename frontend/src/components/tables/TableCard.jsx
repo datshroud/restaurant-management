@@ -2,6 +2,7 @@ import React from 'react'
 import { getRandomBG } from '../../utils'
 
 const TableCard = ({table}) => {
+    const bgColor = getRandomBG();
   return (
     <div className='flex flex-col px-4 py-4 bg-[#252525] h-fit rounded-lg
                     cursor-pointer shadow-lg hover:bg-[#2c2c2c]'>
@@ -20,8 +21,8 @@ const TableCard = ({table}) => {
             {/* get div with random color */}
 
             <div className={`flex justify-center items-center 
-                            h-[80px] w-[80px] rounded-full`}
-                style={{backgroundColor: getRandomBG()}}>
+                            h-[80px] w-[80px] bg-[var(--bg)] rounded-full`}
+                style={{"--bg": bgColor}}>
                 <h1 className='text-[#f5f5f5] text-2xl tracking-wide'>
                     {table.initial}
                 </h1>

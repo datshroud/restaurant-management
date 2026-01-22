@@ -1,6 +1,7 @@
 import React, {useState} from 'react'
 import TableCard from '../components/tables/TableCard';
 import { tables } from '../constants';
+import BottomNav from '../components/shared/BottomNav'
 
 const Tables = () => {
     const [statusType, setStatusType] = useState("all");
@@ -34,6 +35,7 @@ const Tables = () => {
                     })
                 }
             </div>
+            <BottomNav />
         </div>
     )
 }

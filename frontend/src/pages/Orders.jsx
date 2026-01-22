@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import OrderCard from '../components/orders/OrderCard'
+import BottomNav from '../components/shared/BottomNav'
 
 const Orders = () => {
   const [statusType, setStatusType] = useState("all");
@@ -51,6 +52,7 @@ const Orders = () => {
         <OrderCard/>
         <OrderCard/>
       </div>
+      <BottomNav />
     </div>
   )
 }
