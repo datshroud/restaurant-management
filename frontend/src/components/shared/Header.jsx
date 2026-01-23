@@ -9,7 +9,10 @@ const Header = () => {
         {/* logo */}
         <div className="flex items-center gap-2">
             <img src={logo} className="h-8 w-8" alt="restasty logo"/>
-            <h1 className='text-lg font-semibold text-[#f5f5f5]'>Restasty</h1>
+            <a href='/' 
+                className='text-lg font-semibold text-[#f5f5f5]'>
+                Restasty
+            </a>
         </div>
         {/* search */}
         <div className='flex items-center gap-4 bg-[#1f1f1f] rounded-[15px]

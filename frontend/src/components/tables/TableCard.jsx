@@ -1,10 +1,15 @@
 import React from 'react'
 import { getRandomBG } from '../../utils'
+import { useNavigate } from 'react-router-dom';
 
 const TableCard = ({table}) => {
     const bgColor = getRandomBG();
+    const navigate = useNavigate();
+    const handleClick = () => {
+        navigate(`/tables/${table.id}`);
+    }
   return (
-    <div className='flex flex-col px-4 py-4 bg-[#252525] h-fit rounded-lg
+    <div onClick={handleClick} className='flex flex-col px-4 py-4 bg-[#252525] h-fit rounded-lg
                     cursor-pointer shadow-lg hover:bg-[#2c2c2c]'>
         <div className='flex items-center justify-between'>
             <h1 className='text-[#f5f5f5] text-xl font-semibold tracking-wide'>
