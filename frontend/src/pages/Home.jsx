@@ -7,7 +7,6 @@ import { CiViewList } from "react-icons/ci";
 import PopularDishes from '../components/home/PopularDishes';
 import OutOfStock from '../components/home/OutOfStock';
 import ProgressAndPayment from '../components/home/ProgressAndPayment';
-import BottomNav from '../components/shared/BottomNav'
 const Home = () => {
   return (
     <section className='flex bg-[#1f1f1f] h-[calc(100vh-5rem)] 
@@ -31,7 +30,6 @@ const Home = () => {
       <div className="flex-[2] bg-[#1f1f1f] flex flex-col pr-6">
         <ProgressAndPayment/>
       </div>
-      <BottomNav />
     </section>
   )
 }

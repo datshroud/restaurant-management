@@ -4,38 +4,57 @@ import { MdOutlineReorder } from "react-icons/md";
 import { MdTableBar } from "react-icons/md";
 import { CiCircleMore } from "react-icons/ci";
 import { BiSolidDish } from "react-icons/bi";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import Modal from "./Modal";
+import { useDispatch } from "react-redux";
+import { setCustomer } from "../../redux/slices/customerSlice";
 
 const BottomNav = () => {
   const navigate = useNavigate();
+  const location = useLocation();
+  const dispatch = useDispatch();
   const [isModalOpen, setOpenModal] = useState(false);
   const [guestCnt, setGuestCnt] = useState(0)
+  const [name, setName] = useState("");
+  const [phone, setPhone] = useState("");
   const openModal = () => setOpenModal(true);
   const closeModal = () => setOpenModal(false);
   const incGuestCnt = () => setGuestCnt(guestCnt + 1)
   const decGuestCnt = () => setGuestCnt(Math.max(guestCnt - 1, 0))
+  const handleCreateOrder = () => {
+    // Dispatch action to set customer info
+    dispatch(setCustomer({name, phone, guests: guestCnt}));
+    navigate("/tables"); closeModal();
+  }
+
+  const isActive = (path) => path === location.pathname;
 
   return (
     <div className="fixed flex justify-around bottom-0 left-0 right-0 
                     bg-[#262626] p-2 h-16">
-        <button onClick={() => navigate("/")} className="flex items-center 
-                          justify-center text-[#f5f5f5] bg-[#343434] 
-                          w-[200px] cursor-pointer rounded-[20px]">
+        <button onClick={() => navigate("/")} className={`flex items-center 
+                          justify-center 
+                          w-[300px] cursor-pointer rounded-[20px]
+                          ${isActive("/") ? "bg-[#343434] text-[#f5f5f5]" 
+                            : "text-[#ababab]"}`}>
             <FaHome className="inline mr-2" size={30}/><p>Home</p>
         </button>
-        <button className="flex items-center justify-center text-[#ababab]
-                        w-[200px] cursor-pointer rounded-[20px]"
+        <button className={`flex items-center justify-center 
+                        w-[300px] cursor-pointer rounded-[20px]
+                        ${isActive("/orders") ? "bg-[#343434] text-[#f5f5f5]" 
+                            : "text-[#ababab]"}`}
                 onClick={() => navigate("/orders")}>
             <MdOutlineReorder className="inline mr-2" size={30}/><p>Orders</p>
         </button>
-        <button className="flex items-center justify-center text-[#ababab]
-                        w-[200px] cursor-pointer rounded-[20px]"
+        <button className={`flex items-center justify-center 
+                        w-[300px] cursor-pointer rounded-[20px]
+                        ${isActive("/tables") ? "bg-[#343434] text-[#f5f5f5]" 
+                            : "text-[#ababab]"}`}
                 onClick={() => navigate("/tables")}>
             <MdTableBar className="inline mr-2" size={30}/><p>Table</p>
         </button>
-        <button className="flex items-center justify-center text-[#ababab]
-                        w-[200px] cursor-pointer rounded-[20px]"
+        <button className={`flex items-center justify-center text-[#ababab]
+                        w-[300px] cursor-pointer rounded-[20px]`}
                 onClick={() => navigate("/")}>
             <CiCircleMore className="inline mr-2" size={30}/><p>More</p>
         </button>
@@ -49,6 +68,8 @@ const BottomNav = () => {
                 <label className="text-[#ababab]">Tên khách hàng</label>
                 <input type="text" name="" id=""
                         placeholder="Nhập tên khách hàng" 
+                        value={name}
+                        onChange={(e) => setName(e.target.value)}
                         className="bg-[#1f1f1f] px-4 py-4 rounded-lg 
                         text-[#ababab] focus:outline-none">
                 </input>
@@ -56,6 +77,8 @@ const BottomNav = () => {
                 <label className="text-[#ababab]">Số điện thoại</label>
                 <input type="number" name="" id=""
                         placeholder="+84-9999999999" 
+                        value={phone}
+                        onChange={(e) => setPhone(e.target.value)}
                         className="bg-[#1f1f1f] px-4 py-4 rounded-lg 
                         text-[#ababab] focus:outline-none">
                 </input>
@@ -79,7 +102,7 @@ const BottomNav = () => {
                                     justify-center bg-[#d69a03] rounded-lg
                                     font-semibold cursor-pointer 
                                     hover:bg-[#9c7000]"
-                        onClick={() => {navigate("/tables"); closeModal()}}>
+                        onClick={() => {handleCreateOrder()}}>
                     Tạo yêu cầu
                 </button>
             </div>

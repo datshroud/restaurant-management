@@ -1,24 +1,81 @@
 import React, {useState} from 'react'
 import { menus } from '../../constants'
 import { GrRadialSelected } from "react-icons/gr";
+import { useDispatch, useSelector } from 'react-redux';
+import { addItem, removeItem } from '../../redux/slices/cartSlice';
+
+// const itemCountsRef = {};
+
+
+const MenuItemCard = ({item, menuId}) => {
+    const dispatch = useDispatch();
+    const cartItemId = (menuId << 16) + item.id;
+    const itemCnt = useSelector((state) => state.cart[cartItemId]?.quantity ?? 0);
+
+    const handleIncItem = (item) => {
+        dispatch(addItem({...item, id: cartItemId}));
+    }
+
+    const handleDecItem = (item) => {
+        dispatch(removeItem({...item, id: cartItemId}));
+    }
+    return (
+        <div className='flex flex-col gap-4 bg-[#1a1a1a] p-6 
+                    rounded-xl shadow-lg hover:shadow-xl h-fit'>
+            <img className='w-full aspect-[3/2] rounded-lg' 
+                    src={item.image}/>
+            <h1 className='text-xl text-[#f5f5f5] 
+                                tracking-wide font-semibold'>
+                {item.name}
+            </h1>
+            <p className='text-[#ababab] max-h-[20px] overflow-hidden'>
+                {item.description}
+            </p>
+            <div className='flex items-center justify-between'>
+                <p className='text-xl text-[#f5f5f5] 
+                                tracking-wide font-semibold'>
+                    {
+                        item.price.toLocaleString(
+                            'vi-VN', {
+                                style: 'currency', 
+                                currency: 'VND'
+                            }
+                        )
+                    }
+                </p>
+                <div className="flex items-center 
+                                justify-between rounded-lg">
+                    <button onClick={() => handleDecItem(item)}
+                            className="flex items-center 
+                                justify-center cursor-pointer
+                                    text-[#f5f5f5] text-2xl
+                                w-[50px] h-[50px] rounded-full
+                                bg-[#363636]">
+                        &minus;
+                    </button>
+                    <span className="text-[#ababab] min-w-[40px]
+                                    flex items-center 
+                                    justify-center
+                                    max-h-[70px]">
+                        {itemCnt}
+                    </span>
+                    <button onClick={() => handleIncItem(item)}
+                            className="flex items-center 
+                                justify-center cursor-pointer
+                                    text-[#f5f5f5] text-2xl 
+                                    w-[50px] h-[50px] rounded-full
+                                    bg-[#f6b100]">
+                        &#43;
+                    </button>
+                </div>
+            </div>
+        </div>
+    )
+}
+
 const MenuContainer = () => {
     const [selectedMenu, setSelectedMenu] = useState(menus[0]);
-    const [selectedItem, setSelectedItem] = useState(menus[0].items[0]);
-    const [itemCounts, setItemCounts] = useState({});
-    const incitemCnt = (item) => {
-        setSelectedItem(item);
-        setItemCounts((prev) => ({
-            ...prev,
-            [item.id]: (prev[item.id] ?? 0) + 1,
-        }));
-    }
-    const decitemCnt = (item) => {
-        setSelectedItem(item);
-        setItemCounts((prev) => ({
-            ...prev,
-            [item.id]: Math.max((prev[item.id] ?? 0) - 1, 0),
-        }));
-    } 
+    
   return (
     <div className='flex-1 flex bg-[#1f1f1f] min-h-0 gap-4'>
         <div className="flex-[1] flex flex-col bg-[#1f1f1f] min-h-0">
@@ -66,56 +123,7 @@ const MenuContainer = () => {
                             scrollbar-hide '>
                 {
                     selectedMenu.items.map((item) => (
-                        <div className='flex flex-col gap-4 bg-[#1a1a1a] p-6 
-                                    rounded-xl shadow-lg hover:shadow-xl'>
-                            <img className='w-full aspect-[3/2] rounded-lg' 
-                                    src={item.image}/>
-                            <h1 className='text-xl text-[#f5f5f5] 
-                                                tracking-wide font-semibold'>
-                                {item.name}
-                            </h1>
-                            <p className='text-[#ababab] max-h-[20px] overflow-hidden'>
-                                {item.description}
-                            </p>
-                            <div className='flex items-center justify-between'>
-                                <p className='text-xl text-[#f5f5f5] 
-                                                tracking-wide font-semibold'>
-                                    {
-                                        item.price.toLocaleString(
-                                            'vi-VN', {
-                                                style: 'currency', 
-                                                currency: 'VND'
-                                            }
-                                        )
-                                    }
-                                </p>
-                                <div className="flex items-center 
-                                                justify-between rounded-lg">
-                                    <button onClick={() => decitemCnt(item)}
-                                            className="flex items-center 
-                                                justify-center cursor-pointer
-                                                    text-[#f5f5f5] text-2xl
-                                                w-[50px] h-[50px] rounded-full
-                                                bg-[#363636]">
-                                        &minus;
-                                    </button>
-                                    <span className="text-[#ababab] min-w-[40px]
-                                                    flex items-center 
-                                                    justify-center
-                                                    max-h-[70px]">
-                                        {itemCounts[item.id] ?? 0}
-                                    </span>
-                                    <button onClick={() => incitemCnt(item)}
-                                            className="flex items-center 
-                                                justify-center cursor-pointer
-                                                    text-[#f5f5f5] text-2xl 
-                                                    w-[50px] h-[50px] rounded-full
-                                                    bg-[#f6b100]">
-                                        &#43;
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
+                        <MenuItemCard item={item} key={item.id} menuId={selectedMenu.id}/>
                     ))
                 }
             </div>
