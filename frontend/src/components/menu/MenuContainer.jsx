@@ -1,8 +1,9 @@
-import React, {useState} from 'react'
-import { menus } from '../../constants'
+import React, {useEffect, useMemo, useState} from 'react'
+import { menus as menuMeta } from '../../constants'
 import { GrRadialSelected } from "react-icons/gr";
 import { useDispatch, useSelector } from 'react-redux';
 import { addItem, removeItem } from '../../redux/slices/cartSlice';
+import api from '../../https/api';
 
 // const itemCountsRef = {};
 
@@ -22,7 +23,7 @@ const MenuItemCard = ({item, menuId}) => {
     return (
         <div className='flex flex-col gap-4 bg-[#1a1a1a] p-6 
                     rounded-xl shadow-lg hover:shadow-xl h-fit'>
-            <img className='w-full aspect-[3/2] rounded-lg' 
+                <img className='w-full aspect-[3/2] rounded-lg' 
                     src={item.image}/>
             <h1 className='text-xl text-[#f5f5f5] 
                                 tracking-wide font-semibold'>
@@ -74,7 +75,50 @@ const MenuItemCard = ({item, menuId}) => {
 }
 
 const MenuContainer = () => {
-    const [selectedMenu, setSelectedMenu] = useState(menus[0]);
+    const [categories, setCategories] = useState([]);
+    const [items, setItems] = useState([]);
+    const [selectedMenu, setSelectedMenu] = useState(null);
+
+    useEffect(() => {
+        const load = async () => {
+            const [catRes, itemRes] = await Promise.all([
+                api.get('/menu/categories'),
+                api.get('/menu/items'),
+            ]);
+            setCategories(catRes.data ?? []);
+            setItems(itemRes.data ?? []);
+        };
+
+        load();
+    }, []);
+
+    const menuList = useMemo(() => {
+        return categories.map((cat) => {
+            const meta = menuMeta.find((m) => m.name === cat.Name);
+            return {
+                id: cat.Id,
+                name: cat.Name,
+                icon: meta?.icon ?? '🍽️',
+                bgColor: meta?.bgColor ?? '#2a2a2a',
+                items: items
+                    .filter((i) => i.CategoryId === cat.Id)
+                    .map((i) => ({
+                        id: i.Id,
+                        name: i.Name,
+                        description: i.Description,
+                        price: i.Price,
+                        image: i.ImageUrl,
+                    })),
+            };
+        });
+    }, [categories, items]);
+
+    useEffect(() => {
+        if (menuList.length === 0) return;
+        if (!selectedMenu || !menuList.find((m) => m.id === selectedMenu.id)) {
+            setSelectedMenu(menuList[0]);
+        }
+    }, [menuList, selectedMenu]);
     
   return (
     <div className='flex-1 flex bg-[#1f1f1f] min-h-0 gap-4'>
@@ -82,7 +126,7 @@ const MenuContainer = () => {
             <div className='flex flex-col gap-6 px-4 overflow-y-auto min-h-0
                             scrollbar-hide'>
                 {
-                    menus.map((items) => {
+                    menuList.map((items) => {
                         return (
                             <div onClick={() => {setSelectedMenu(items);}}
                                     className={`rounded-2xl px-4 py-4 cursor-pointer shadow-lg
@@ -122,7 +166,7 @@ const MenuContainer = () => {
             <div className='flex-1 grid grid-cols-3 gap-6 min-h-0 overflow-y-auto
                             scrollbar-hide '>
                 {
-                    selectedMenu.items.map((item) => (
+                    selectedMenu?.items.map((item) => (
                         <MenuItemCard item={item} key={item.id} menuId={selectedMenu.id}/>
                     ))
                 }

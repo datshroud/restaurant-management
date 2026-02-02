@@ -1,7 +1,26 @@
-import React, { useState } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import OrderCard from '../components/orders/OrderCard'
+import api from '../https/api'
 const Orders = () => {
   const [statusType, setStatusType] = useState("all");
+  const [orders, setOrders] = useState([]);
+
+  useEffect(() => {
+    const load = async () => {
+      const res = await api.get('/orders');
+      setOrders(res.data ?? []);
+    };
+
+    load();
+  }, []);
+
+  const filteredOrders = useMemo(() => {
+    if (statusType === 'all') return orders;
+    if (statusType === 'progress') return orders.filter((o) => o.Status === 'progress');
+    if (statusType === 'ready') return orders.filter((o) => o.Status === 'ready');
+    if (statusType === 'completed') return orders.filter((o) => o.Status === 'completed');
+    return orders;
+  }, [orders, statusType]);
   return (
     
     <div className='flex flex-col px-8 py-4 bg-[#1f1f1f] h-[calc(100vh-5rem)]
@@ -39,16 +58,9 @@ const Orders = () => {
       </div>
       <div className='grid grid-cols-3 gap-10 py-4 flex-1 min-h-0 
                     h-[calc(100vh-10rem)] overflow-y-auto scrollbar-hide'>
-        <OrderCard/>
-        <OrderCard/>
-        <OrderCard/>
-        <OrderCard/>
-        <OrderCard/>
-        <OrderCard/>
-        <OrderCard/>
-        <OrderCard/>
-        <OrderCard/>
-        <OrderCard/>
+        {filteredOrders.map((order) => (
+          <OrderCard key={order.Id} order={order} />
+        ))}
       </div>
     </div>
   )

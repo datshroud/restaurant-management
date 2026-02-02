@@ -7,6 +7,7 @@ import { useState } from 'react';
 const OrderDetailContainer = () => {
     const customerData = useSelector((state) => state.customer);
     const cartData = useSelector((state) => state.cart);
+    // eslint-disable-next-line no-unused-vars
     const [dateTime, setDateTime] = useState(new Date());
   return (
     <div className='flex-1 rounded-xl bg-[#1a1a1a] flex flex-col shadow-lg '>
