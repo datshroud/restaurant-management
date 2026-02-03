@@ -8,16 +8,23 @@ import api from '../../https/api';
 // const itemCountsRef = {};
 
 
-const MenuItemCard = ({item, menuId}) => {
+const MenuItemCard = ({item, menuId, readOnly = false}) => {
     const dispatch = useDispatch();
     const cartItemId = (menuId << 16) + item.id;
     const itemCnt = useSelector((state) => state.cart[cartItemId]?.quantity ?? 0);
+    const stockQty = item?.stockQty ?? null;
+    const stockUnit = item?.stockUnit ?? '';
+    const isOutOfStock = typeof stockQty === 'number' && stockQty <= 0;
+    const canIncrease = typeof stockQty !== 'number' || itemCnt < stockQty;
 
     const handleIncItem = (item) => {
-        dispatch(addItem({...item, id: cartItemId}));
+        if (readOnly) return;
+        if (!canIncrease) return;
+        dispatch(addItem({ ...item, id: cartItemId, menuItemId: item.id }));
     }
 
     const handleDecItem = (item) => {
+        if (readOnly) return;
         dispatch(removeItem({...item, id: cartItemId}));
     }
     return (
@@ -31,6 +38,9 @@ const MenuItemCard = ({item, menuId}) => {
             </h1>
             <p className='text-[#ababab] max-h-[20px] overflow-hidden'>
                 {item.description}
+            </p>
+            <p className='text-[#ababab] text-sm'>
+                Tồn kho: {typeof stockQty === 'number' ? `${stockQty} ${stockUnit || ''}` : 'Không theo dõi'}
             </p>
             <div className='flex items-center justify-between'>
                 <p className='text-xl text-[#f5f5f5] 
@@ -46,12 +56,14 @@ const MenuItemCard = ({item, menuId}) => {
                 </p>
                 <div className="flex items-center 
                                 justify-between rounded-lg">
-                    <button onClick={() => handleDecItem(item)}
-                            className="flex items-center 
+                    <button
+                            onClick={() => handleDecItem(item)}
+                            disabled={readOnly}
+                            className={`flex items-center 
                                 justify-center cursor-pointer
                                     text-[#f5f5f5] text-2xl
                                 w-[50px] h-[50px] rounded-full
-                                bg-[#363636]">
+                                ${readOnly ? 'bg-[#555] cursor-not-allowed text-[#ababab]' : 'bg-[#363636]'}`}>
                         &minus;
                     </button>
                     <span className="text-[#ababab] min-w-[40px]
@@ -61,11 +73,12 @@ const MenuItemCard = ({item, menuId}) => {
                         {itemCnt}
                     </span>
                     <button onClick={() => handleIncItem(item)}
-                            className="flex items-center 
-                                justify-center cursor-pointer
-                                    text-[#f5f5f5] text-2xl 
-                                    w-[50px] h-[50px] rounded-full
-                                    bg-[#f6b100]">
+                            disabled={readOnly || !canIncrease || isOutOfStock}
+                            className={`flex items-center 
+                                justify-center text-2xl 
+                                w-[50px] h-[50px] rounded-full
+                                ${readOnly || !canIncrease || isOutOfStock ? 'bg-[#555] cursor-not-allowed text-[#ababab]' : 'bg-[#f6b100] cursor-pointer text-[#f5f5f5]'}`}
+                            >
                         &#43;
                     </button>
                 </div>
@@ -74,7 +87,7 @@ const MenuItemCard = ({item, menuId}) => {
     )
 }
 
-const MenuContainer = () => {
+const MenuContainer = ({ searchTerm = '', sortOrder = 'asc', readOnly = false }) => {
     const [categories, setCategories] = useState([]);
     const [items, setItems] = useState([]);
     const [selectedMenu, setSelectedMenu] = useState(null);
@@ -108,17 +121,41 @@ const MenuContainer = () => {
                         description: i.Description,
                         price: i.Price,
                         image: i.ImageUrl,
+                        stockQty: i.StockQty,
+                        stockUnit: i.StockUnit,
                     })),
             };
         });
     }, [categories, items]);
 
     useEffect(() => {
-        if (menuList.length === 0) return;
-        if (!selectedMenu || !menuList.find((m) => m.id === selectedMenu.id)) {
-            setSelectedMenu(menuList[0]);
+        if (selectedMenu && !menuList.find((m) => m.id === selectedMenu.id)) {
+            setSelectedMenu(null);
         }
     }, [menuList, selectedMenu]);
+
+    const filteredItems = useMemo(() => {
+        const normalized = searchTerm.trim().toLowerCase();
+        const sourceItems = selectedMenu
+            ? selectedMenu.items.map((item) => ({ ...item, menuId: selectedMenu.id }))
+            : menuList.flatMap((menu) =>
+                menu.items.map((item) => ({ ...item, menuId: menu.id }))
+            );
+
+        const searched = normalized
+            ? sourceItems.filter((item) =>
+                item.name.toLowerCase().includes(normalized) ||
+                (item.description ?? '').toLowerCase().includes(normalized)
+            )
+            : sourceItems;
+
+        const sorted = [...searched].sort((a, b) => {
+            if (sortOrder === 'desc') return b.price - a.price;
+            return a.price - b.price;
+        });
+
+        return sorted;
+    }, [menuList, selectedMenu, searchTerm, sortOrder]);
     
   return (
     <div className='flex-1 flex bg-[#1f1f1f] min-h-0 gap-4'>
@@ -128,27 +165,33 @@ const MenuContainer = () => {
                 {
                     menuList.map((items) => {
                         return (
-                            <div onClick={() => {setSelectedMenu(items);}}
+                            <div onClick={() => {
+                                    if (selectedMenu?.id === items.id) {
+                                        setSelectedMenu(null);
+                                    } else {
+                                        setSelectedMenu(items);
+                                    }
+                                }}
                                     className={`rounded-2xl px-4 py-4 cursor-pointer shadow-lg
                                             hover:shadow-xl hover:scale-105 
                                             transition-all duration-150
                                             ease-in-out
-                                            ${items !== selectedMenu ?
+                                            ${items.id !== selectedMenu?.id ?
                                                 'bg-[#1a1a1a]' : 'bg-[var(--color)]'} `}
                                         style={{"--color": items.bgColor}}
                                 key={items.id}>
                                 
                                 <div className='flex items-center justify-between'>
                                     <h1 className={` text-3xl font-semibold
-                                        ${items !== selectedMenu ? 'text-[#f5f5f5]'
+                                        ${items.id !== selectedMenu?.id ? 'text-[#f5f5f5]'
                                         : 'text-[#1a1a1a]'}`
                                     }>
                                         {items.icon}    {items.name}
                                     </h1>
-                                    {selectedMenu === items && 
+                                    {selectedMenu?.id === items.id && 
                                     <GrRadialSelected className='text-[#1f1f1f] text-2xl'/>}
                                 </div>
-                                <p className={`mt-10 ${items !== selectedMenu ?
+                                <p className={`mt-10 ${items.id !== selectedMenu?.id ?
                                     'text-[#ababab]' : 'text-[#1a1a1a]'}
                                     text-lg font-medium  
                                     overflow-hidden`}>
@@ -166,8 +209,8 @@ const MenuContainer = () => {
             <div className='flex-1 grid grid-cols-3 gap-6 min-h-0 overflow-y-auto
                             scrollbar-hide '>
                 {
-                    selectedMenu?.items.map((item) => (
-                        <MenuItemCard item={item} key={item.id} menuId={selectedMenu.id}/>
+                    filteredItems.map((item) => (
+                        <MenuItemCard item={item} key={`${item.menuId}-${item.id}`} menuId={item.menuId} readOnly={readOnly}/>
                     ))
                 }
             </div>

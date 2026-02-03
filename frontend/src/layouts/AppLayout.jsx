@@ -1,14 +1,16 @@
 import React from 'react';
-import { Outlet } from 'react-router-dom';
+import { Outlet, useLocation } from 'react-router-dom';
 import Header from '../components/shared/Header';
 import BottomNav from '../components/shared/BottomNav';
 
 const AppLayout = () => {
+  const location = useLocation();
+  const isSelectMode = location.pathname === '/tables' && location.state?.selectMode;
   return (
     <>
-      <Header />
+      {!isSelectMode && <Header />}
       <Outlet />
-      <BottomNav />
+      {!isSelectMode && <BottomNav />}
     </>
   );
 };
